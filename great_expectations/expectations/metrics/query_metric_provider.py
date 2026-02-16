@@ -117,8 +117,11 @@ class QueryMetricProvider(MetricProvider):
             # this requires compilation & aliasing when formatting the parameterized query
             batch = batch_selectable.compile(compile_kwargs={"literal_binds": True})
             # all join queries require the user to have taken care of aliasing themselves
-            if "JOIN" in query.upper():
+            
+            if "JOIN" in query.upper() or execution_engine.dialect_name == "oracle": # Oracle does not support table aliasing
                 query = query.format(batch=f"({batch})", **parameters)
+                if "AS anon_1" in query:
+                    query = query.replace(" AS anon_1", "") # Hacky but works 
             else:
                 query = query.format(batch=f"({batch}) AS subselect", **parameters)
         else:

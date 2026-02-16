@@ -43,11 +43,18 @@ class QueryRowCount(QueryMetricProvider):
                 execution_engine=execution_engine,
             )
         )
+        # Oracle does not support table aliasing
         count_column_name = "unexpected_row_count"
-        row_count_query = (
-            f"SELECT COUNT(*) as {count_column_name} FROM "
-            f"({substituted_batch_subquery}) AS substituted_batch_subquery"
+        if execution_engine.dialect_name == "oracle":
+            row_count_query = (
+                f"SELECT COUNT(*) as {count_column_name} FROM "
+                f"({substituted_batch_subquery})"
         )
+        else:
+            row_count_query = (
+                f"SELECT COUNT(*) as {count_column_name} FROM "
+                f"({substituted_batch_subquery}) AS substituted_batch_subquery"
+            )
         result: Union[Sequence[sa.Row[Any]], Any] = execution_engine.execute_query(
             sa.text(row_count_query)
         ).fetchone()
