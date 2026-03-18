@@ -309,3 +309,8 @@ try:
     from sqlalchemy.sql import sqltypes
 except (ImportError, AttributeError):
     sqltypes = SQLALCHEMY_NOT_IMPORTED  # type: ignore[assignment] # FIXME CoP
+
+try:
+    from sqlalchemy.dialects import oracle
+except (ImportError, AttributeError):
+    oracle = SQLALCHEMY_NOT_IMPORTED  # type: ignore[assignment] # FIXME CoP
