@@ -142,6 +142,13 @@ def get_dialect_regex_expression(  # noqa: C901, PLR0911, PLR0912, PLR0915 # FIX
         else:
             return sa.not_(sa.func.regexp_like(column, sqlalchemy.literal(regex)))
 
+    # oracle sql
+    if issubclass(dialect.dialect, sa.dialects.oracle.dialect):
+        if positive:
+            return sa.func.regexp_like(column, sqlalchemy.literal(regex))
+        else:
+            return sa.not_(sa.func.regexp_like(column, sqlalchemy.literal(regex)))
+
     # redshift
     # noinspection PyUnresolvedReferences
     try:
